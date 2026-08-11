@@ -1,0 +1,39 @@
+on:
+  workflow_dispatch:
+    inputs:
+      godot-version: 
+        description: "The version of Godot downloaded."
+        required: false
+        type: string
+        default: "4.7.1"
+      godot-flavor: 
+        description: "The flavor of Godot downloaded."
+        required: false
+        type: string
+        default: "stable"
+      export-name:
+        description: "The name of the Xcode project and generated IPA."
+        required: false
+        type: string
+        default: "my-ios-project"
+      configuration:
+        description: "The configuration of both the godot export and xcode build. Can be release|debug."
+        required: false
+        type: choice
+        options: ["release", "debug"]
+        default: "release"
+
+jobs:
+  build-ios:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - uses: gamekiller2048/Godot-Unsigned-IOS@v2
+        with:
+          godot-version: ${{ inputs.godot-version }}
+          godot-flavor: ${{ inputs.godot-flavor }}
+          export-name: ${{ inputs.export-name }}
+          configuration: ${{ inputs.configuration }}
