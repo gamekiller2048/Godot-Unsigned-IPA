@@ -1,73 +1,23 @@
-name: Build iOS IPA
+on: push
 
-on:
-  push:
-    branches:
-      - master
 jobs:
   build-ios:
     runs-on: macos-latest
 
-    env:
-      GODOT_VERSION: "4.6.2"
-      GODOT_FLAVOR: "stable"
-      EXPORT_NAME: "my_ios_project"
-
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Check Cached Godot
-        id: cache-godot
-        uses: actions/cache@v4
+      - uses: gamekiller2048/Godot-Unsigned-IOS@v2
         with:
-          path: godot
-          key: "godot-${{env.GODOT_VERSION}}-${{env.GODOT_FLAVOR}}"
-    
-      - name: Install Godot
-        if: steps.cache-godot.outputs.cache-hit != 'true'
-        run: |
-          curl -L "https://downloads.godotengine.org/?version=${GODOT_VERSION}&flavor=${GODOT_FLAVOR}&slug=macos.universal.zip&platform=macos.universal" -o godot.zip
-          unzip godot.zip -d godot
-          chmod +x godot/Godot.app/Contents/MacOS/Godot
-        id: godot
+          # The version of Godot downloaded.
+          godot-version: "4.7.1"
 
-      - name: Check Cached Export Templates
-        id: cache-templates
-        uses: actions/cache@v4
-        with:
-          path: "~/Library/Application Support/Godot/export_templates/${{env.GODOT_VERSION}}.${{env.GODOT_FLAVOR}}"
-          key: "godot-templates-${{env.GODOT_VERSION}}-${{env.GODOT_FLAVOR}}"
+          # The flavor of Godot downloaded.
+          godot-flavor: "stable"
 
-      - name: Download Export Templates
-        if: steps.cache-templates.outputs.cache-hit != 'true'
-        run: |
-          curl -L "https://downloads.godotengine.org/?version=$GODOT_VERSION&flavor=$GODOT_FLAVOR&slug=export_templates.tpz&platform=templates" -o templates.tpz
-          TEMPLATE_DIR="$HOME/Library/Application Support/Godot/export_templates/$GODOT_VERSION.$GODOT_FLAVOR"
-          mkdir -p "$TEMPLATE_DIR"
-          
-          tar -xf templates.tpz -C "$TEMPLATE_DIR" --strip-components 1
+          # The name of the Xcode project and generated IPA.
+          export-name: "my-ios-project"
 
-      - name: Export Godot Project for iOS
-        run: |
-          mkdir -p build
-          ./godot/Godot.app/Contents/MacOS/Godot --headless --export-release "iOS" build/$EXPORT_NAME.zip
-        continue-on-error: true
-        
-      - name: Build Xcode Project (Unsigned)
-        run: |
-          cd build
-          xcodebuild -project $EXPORT_NAME.xcodeproj -scheme $EXPORT_NAME -sdk iphoneos -configuration Release -destination generic/platform=iOS archive -archivePath $EXPORT_NAME.xcarchive CODE_SIGNING_ALLOWED=NO
-      
-      - name: Package Unsigned IPA
-        run: |
-          cd build/$EXPORT_NAME.xcarchive/Products/Applications
-          mkdir -p Payload
-          mv *.app Payload/
-          zip -r ../$EXPORT_NAME.ipa Payload
-
-      - name: Upload IPA Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{env.EXPORT_NAME}}.ipa
-          path: "build/${{env.EXPORT_NAME}}.xcarchive/Products/${{env.EXPORT_NAME}}.ipa"
+          # The configuration of both the godot export and xcode build. Can be release|debug.
+          configuration: "release"
