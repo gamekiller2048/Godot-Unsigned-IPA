@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/player.gd" id="1_player"]
+
+[node name="Player" type="CharacterBody3D"]
+script = ExtResource("1_player")
+floor_snap_length = 0.25
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
