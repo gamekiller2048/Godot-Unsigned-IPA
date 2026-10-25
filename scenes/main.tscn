@@ -1,0 +1,28 @@
+[gd_scene format=3 uid="uid://bwxsj1w6ubvm5"]
+
+[ext_resource type="Script" uid="uid://emro4gml2qta" path="res://scripts/main.gd" id="1_main"]
+[ext_resource type="PackedScene" path="res://scenes/player.tscn" id="2_player"]
+[ext_resource type="PackedScene" path="res://scenes/ui.tscn" id="3_ui"]
+[ext_resource type="Script" uid="uid://brxtk75rtmvd0" path="res://scripts/track_manager.gd" id="4_track_manager"]
+
+[node name="Main" type="Node3D" unique_id=307557969]
+script = ExtResource("1_main")
+
+[node name="Player" parent="." unique_id=709723869 instance=ExtResource("2_player")]
+
+[node name="TrackManager" type="Node3D" parent="." unique_id=1822703100]
+script = ExtResource("4_track_manager")
+
+[node name="SpawnedObjects" type="Node3D" parent="." unique_id=1498579938]
+
+[node name="Camera3D" type="Camera3D" parent="." unique_id=2002048455]
+current = true
+fov = 68.0
+
+[node name="KeyLight" type="DirectionalLight3D" parent="." unique_id=57549129]
+transform = Transform3D(0.88294756, 0.36994863, -0.2890356, 0, 0.6156615, 0.7880107, 0.46947157, -0.6957722, 0.5435968, 0, 0, 0)
+light_energy = 1.15
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1992433892]
+
+[node name="UI" parent="." unique_id=1574319501 instance=ExtResource("3_ui")]
